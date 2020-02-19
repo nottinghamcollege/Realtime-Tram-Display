@@ -1,22 +1,44 @@
-import colorama as col
+import sys
+import json
+import colorama as colour
 import requests
+import argparse
+from datetime import datetime
+
+parser = argparse.ArgumentParser()
+parser.add_argument('atco_code', help='A valid ATCO Code e.g. 9400ZZNOHIG2')
+args = parser.parse_args()
+
+if args.atco_code is None:
+    sys.exit('Please provide an ATCO Code')
 
 def print_info(text):
-    print(col.Fore.BLUE + "[-] " + text)
+    print(colour.Fore.WHITE + text)
+def print_tram(text):
+    print(colour.Fore.YELLOW + '[-] ' + text)
 def print_good(text):
-    print(col.Fore.GREEN + "[+] " + text)
+    print(colour.Fore.GREEN + '[+] ' + text)
 def print_bad(text):
-    print(col.Fore.RED + "[!] " + text)
+    print(colour.Fore.RED + '[!] '  + text)
 
+tram_data = requests.get('https://robinhood.arcticapi.com/network/stops/' + args.atco_code + '/visits').json()
 
-tram_data=requests.get("https://robinhood.arcticapi.com/network/stops/9400ZZNOESK2/visits").json()
-visits=tram_data["_embedded"]["timetable:visit"]
-for visit in visits:
-     if visit['isRealTime']:
-             print_info('Destination: ' + visit['destinationName'])
-             if visit['expectedArrivalTime']==visit['aimedArrivalTime']:
-                    print_good("On Time")
-             else:
-                    print_bad("Late")
-             print_info('Time to Tram: ' + visit['displayTime'])
-             print("  ")
+if '_links' in tram_data:
+    print_info(tram_data['_links']['naptan:stop']['commonName'])
+    print_info(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+    print(' ')
+
+    if '_embedded' in tram_data:
+        visits = tram_data['_embedded']['timetable:visit']
+        for visit in visits:
+             if visit['isRealTime']:
+                     print_tram('Destination: ' + visit['destinationName'])
+                     if visit['expectedArrivalTime'] == visit['aimedArrivalTime']:
+                            print_good('On time!')
+                     else:
+                            print_bad('Running late!')
+
+                     print_info('Expected time of arrival: ' + visit['displayTime'])
+                     print(' ')
+else:
+    sys.exit('No stop data was returned, are you sure this is a valid ATCO Code?')
