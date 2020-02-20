@@ -24,7 +24,10 @@ def print_bad(text):
 tram_data = requests.get('https://robinhood.arcticapi.com/network/stops/' + args.atco_code + '/visits').json()
 
 if '_links' in tram_data:
-    print_info(tram_data['_links']['naptan:stop']['commonName'])
+    stop_name = tram_data['_links']['naptan:stop']['commonName']
+    indicator = tram_data['_links']['naptan:stop']['indicator']
+    
+    print_info(stop_name + ' ' + indicator)
     print_info(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     print(' ')
 
