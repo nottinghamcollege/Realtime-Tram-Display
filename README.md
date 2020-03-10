@@ -8,9 +8,18 @@ Shows tram data on the command line
 
 **Prerequisites**: colorama and requests - Install with pip
 
-**Usage**: $python3 tram.py *ATCOCode*
+**Usage**: `python3 tram.py -h`
+
+#### Parameters ####
+
+| Parameter     | Example value |
+| ------------- | ------------- |
+| ATCO code     | 9400ZZNOHIG2  |
+| Limit         | 4             |
 
 You can find the ATCO code for your stop in [ntm.csv](tramSearch/ntm.csv)
+
+Optionally you can also specify a limit to the amount of times returned, the default is 5 if not specified at run time.
 
 **Example**:
 
